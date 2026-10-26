@@ -27,6 +27,7 @@ Les migrations sont dans `supabase/migrations/` :
 | `0002_rls.sql` | Règles d'accès : chacun ne voit que ses données, rôle admin vérifié côté serveur |
 | `0003_storage.sql` | Buckets **privés** `bottle-photos` et `invoices`, cloisonnés par dossier utilisateur |
 | `0004_views.sql` | `cellar_summaries` : totaux par cave calculés en base |
+| `0005_account.sql` | `delete_my_account()` : suppression du compte et de toutes ses données (RGPD) |
 
 Pour les appliquer à un projet Supabase hébergé (CLI Supabase requise) :
 
@@ -93,6 +94,23 @@ Le parcours complet (connexion → caves → bouteille migrée) nécessite un co
 ```bash
 E2E_EMAIL=… E2E_PASSWORD=… E2E_EXPECT_CASK=7 E2E_EXPECT_PHOTO=1 npm run test:e2e
 ```
+
+## Mise en production
+
+Le dépôt fournit le nécessaire pour un déploiement conforme. Certains points dépendent de vous.
+
+| Sujet | Ce que fait le dépôt | Ce qu'il reste à faire |
+|---|---|---|
+| En-têtes HTTP | `npm run build` produit `dist/_headers` : CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy, cache long des assets. La CSP est aussi injectée en `<meta>` dans `index.html`. | `_headers` est lu tel quel par Netlify et Cloudflare Pages. Sur un autre hébergeur (Vercel, Nginx…), reprenez les mêmes valeurs dans sa configuration. |
+| Configuration | Le build échoue si `VITE_SUPABASE_URL` manque. L'app affiche un écran clair si la configuration est incomplète. | Définir `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` chez l'hébergeur. |
+| Mentions légales et confidentialité | Pages `/mentions-legales` et `/confidentialite`, liées depuis chaque écran. | **Compléter `src/features/legal/legal-info.ts`** : éditeur, adresse, contact, directeur de publication, hébergeur, région Supabase (UE recommandée). |
+| RGPD | Export JSON des données et suppression du compte depuis « Mon compte » (`delete_my_account`, migration `0005`). Aucun traceur, polices auto-hébergées. | — |
+| Mots de passe | 12 caractères minimum (recommandation CNIL) dans l'app et dans `supabase/config.toml`. | Appliquer le même minimum dans Supabase → Authentication → Policies pour le projet hébergé. |
+| Suivi des erreurs | `ErrorBoundary` affiche un écran de secours et journalise l'erreur. | Brancher un service de suivi (Sentry, etc.) dans `componentDidCatch` si souhaité ; le déclarer alors dans la politique de confidentialité. |
+| Anti-robots | Limitation de débit native de Supabase Auth. | Pour une ouverture au public : activer un CAPTCHA (hCaptcha ou Turnstile) dans Supabase Auth. |
+| Intégration continue | `.github/workflows/ci.yml` : audit des dépendances, typecheck, lint, tests, build, E2E. | Pousser le dépôt sur GitHub. |
+
+Vérifié en local sur le build de production : Lighthouse mobile **100** en accessibilité, bonnes pratiques et SEO. LCP de 1,95 s en 4G lente avec CPU ralenti, CLS de 0. `npm audit` : 0 vulnérabilité.
 
 ## Conventions (établies au jalon 1)
 

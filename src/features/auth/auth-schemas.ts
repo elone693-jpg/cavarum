@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+// Pas de compilation à la volée (new Function) : incompatible avec la CSP de l'application.
+z.config({ jitless: true });
+
 const email = z.string().trim().email('Email invalide');
 
 export const signInSchema = z.object({
@@ -10,17 +13,15 @@ export const signInSchema = z.object({
 export const signUpSchema = z.object({
   name: z.string().trim().min(1, 'Votre nom est requis').max(100),
   email,
-  password: z.string().min(8, 'Au moins 8 caractères'),
-  adult: z.literal(true, {
-    errorMap: () => ({ message: 'Vous devez avoir 18 ans ou plus pour utiliser Cavarum' }),
-  }),
+  password: z.string().min(12, 'Au moins 12 caractères'),
+  adult: z.literal(true, { error: 'Vous devez avoir 18 ans ou plus pour utiliser Cavarum' }),
 });
 
 export const forgotPasswordSchema = z.object({ email });
 
 export const resetPasswordSchema = z
   .object({
-    password: z.string().min(8, 'Au moins 8 caractères'),
+    password: z.string().min(12, 'Au moins 12 caractères'),
     confirm: z.string(),
   })
   .refine((v) => v.password === v.confirm, { message: 'Les mots de passe ne correspondent pas', path: ['confirm'] });

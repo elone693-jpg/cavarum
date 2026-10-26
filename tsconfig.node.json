@@ -17,5 +17,5 @@
     "noUncheckedIndexedAccess": true,
     "types": ["node", "vitest/globals"]
   },
-  "include": ["vite.config.ts", "playwright.config.ts", "scripts", "supabase/tests", "e2e"]
+  "include": ["vite.config.ts", "playwright.config.ts", "scripts", "supabase/tests", "e2e", "build"]
 }

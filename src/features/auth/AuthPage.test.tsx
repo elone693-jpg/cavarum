@@ -21,7 +21,7 @@ async function fillSignUp(adult: boolean) {
   await user.click(screen.getByRole('tab', { name: 'Inscription' }));
   await user.type(screen.getByLabelText('Votre nom'), 'Fred');
   await user.type(screen.getByLabelText('Email'), 'fred@example.com');
-  await user.type(screen.getByLabelText('Mot de passe'), 'motdepasse');
+  await user.type(screen.getByLabelText('Mot de passe'), 'rhum-agricole-1');
   if (adult) await user.click(screen.getByLabelText(/J’ai 18 ans ou plus/));
   await user.click(screen.getByRole('button', { name: 'Créer mon compte' }));
 }
@@ -43,7 +43,7 @@ describe('AuthPage', () => {
     expect(authApi.signUp).toHaveBeenCalledWith({
       name: 'Fred',
       email: 'fred@example.com',
-      password: 'motdepasse',
+      password: 'rhum-agricole-1',
       adult: true,
     });
     expect(await screen.findByText(/Vérifiez votre boîte mail/)).toBeInTheDocument();

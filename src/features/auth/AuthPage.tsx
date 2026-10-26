@@ -136,7 +136,7 @@ function SignUpForm() {
         name="password"
         type="password"
         autoComplete="new-password"
-        hint="Au moins 8 caractères"
+        hint="Au moins 12 caractères"
         error={errors.password}
       />
       <div className="space-y-1.5">

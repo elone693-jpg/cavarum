@@ -1,16 +1,14 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { readConfig } from './config';
 
 let client: SupabaseClient | null = null;
 
 /** Client Supabase unique, créé à la première utilisation (les tests n'en ont pas besoin). */
 export function getSupabase(): SupabaseClient {
   if (client) return client;
-  const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-  if (!url || !key) {
-    throw new Error('VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY doivent être définies (voir .env.example)');
-  }
-  client = createClient(url, key);
+  const config = readConfig();
+  if (!config.ok) throw new Error(`Configuration manquante : ${config.missing.join(', ')} (voir .env.example)`);
+  client = createClient(config.supabaseUrl, config.supabaseAnonKey);
   return client;
 }
 

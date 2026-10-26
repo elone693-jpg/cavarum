@@ -1,0 +1,6 @@
+# Application privée : seules les pages publiques peuvent être indexées.
+User-agent: *
+Allow: /auth
+Allow: /mentions-legales
+Allow: /confidentialite
+Disallow: /

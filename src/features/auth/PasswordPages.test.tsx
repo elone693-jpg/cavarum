@@ -39,8 +39,8 @@ describe('ResetPasswordPage', () => {
   it('refuse deux mots de passe différents', async () => {
     const user = userEvent.setup();
     renderRoute(<ResetPasswordPage />);
-    await user.type(screen.getByLabelText('Nouveau mot de passe'), 'motdepasse');
-    await user.type(screen.getByLabelText('Confirmer le mot de passe'), 'autre-mdp');
+    await user.type(screen.getByLabelText('Nouveau mot de passe'), 'rhum-agricole-1');
+    await user.type(screen.getByLabelText('Confirmer le mot de passe'), 'rhum-agricole-2');
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(await screen.findByText('Les mots de passe ne correspondent pas')).toBeInTheDocument();
     expect(authApi.updatePassword).not.toHaveBeenCalled();
@@ -49,10 +49,10 @@ describe('ResetPasswordPage', () => {
   it('enregistre le nouveau mot de passe puis renvoie vers les caves', async () => {
     const user = userEvent.setup();
     renderRoute(<ResetPasswordPage />);
-    await user.type(screen.getByLabelText('Nouveau mot de passe'), 'motdepasse');
-    await user.type(screen.getByLabelText('Confirmer le mot de passe'), 'motdepasse');
+    await user.type(screen.getByLabelText('Nouveau mot de passe'), 'rhum-agricole-1');
+    await user.type(screen.getByLabelText('Confirmer le mot de passe'), 'rhum-agricole-1');
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
-    expect(authApi.updatePassword).toHaveBeenCalledWith('motdepasse');
+    expect(authApi.updatePassword).toHaveBeenCalledWith('rhum-agricole-1');
     expect(await screen.findByText('autre page')).toBeInTheDocument();
   });
 
@@ -60,8 +60,8 @@ describe('ResetPasswordPage', () => {
     vi.mocked(authApi.updatePassword).mockRejectedValue(new Error('Lien expiré'));
     const user = userEvent.setup();
     renderRoute(<ResetPasswordPage />);
-    await user.type(screen.getByLabelText('Nouveau mot de passe'), 'motdepasse');
-    await user.type(screen.getByLabelText('Confirmer le mot de passe'), 'motdepasse');
+    await user.type(screen.getByLabelText('Nouveau mot de passe'), 'rhum-agricole-1');
+    await user.type(screen.getByLabelText('Confirmer le mot de passe'), 'rhum-agricole-1');
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Lien expiré');
   });
