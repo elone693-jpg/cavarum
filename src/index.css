@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Identité Cavarum v1 : brun cave #1a0f0a, or #d4a04a. */
+@layer base {
+  :root {
+    --background: 20 44% 7%;
+    --foreground: 36 33% 90%;
+    --card: 20 35% 10%;
+    --muted: 20 25% 15%;
+    --muted-foreground: 30 15% 62%;
+    --border: 25 22% 20%;
+    --primary: 38 61% 56%;
+    --primary-foreground: 20 44% 7%;
+    --destructive: 0 65% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 38 61% 56%;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    background-image: radial-gradient(ellipse at top, rgba(212, 160, 74, 0.08), transparent 60%);
+    min-height: 100dvh;
+  }
+}

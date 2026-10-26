@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cavarum-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--port", "5173", "--strictPort"],
+      "port": 5173,
+      "env": {
+        "VITE_SUPABASE_URL": "http://127.0.0.1:54321",
+        "VITE_SUPABASE_ANON_KEY": "cle-factice-pour-apercu"
+      }
+    }
+  ]
+}

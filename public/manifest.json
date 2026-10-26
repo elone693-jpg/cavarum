@@ -1,0 +1,16 @@
+{
+  "name": "Cavarum - Maison du Rhum",
+  "short_name": "Cavarum",
+  "description": "Gérez votre collection de rhums premium, suivez la valeur et organisez vos caves.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a0f0a",
+  "theme_color": "#1a0f0a",
+  "lang": "fr",
+  "icons": [
+    { "src": "/app-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "/app-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
+  ]
+}

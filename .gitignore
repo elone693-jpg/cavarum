@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+migration-output/
+playwright-report/
+test-results/
+coverage/
+*.local
+.DS_Store
+.claude/settings.local.json
