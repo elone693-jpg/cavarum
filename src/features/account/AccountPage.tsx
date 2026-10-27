@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { FormError, TextField } from '@/components/ui/field';
+import { PageHeader, Section } from '@/components/ui/layout';
 import { deleteMyAccount, exportMyData, getProfile } from './account-api';
 
 const CONFIRMATION = 'SUPPRIMER';
@@ -38,45 +39,53 @@ export function AccountPage() {
     onSuccess: () => navigate('/auth', { replace: true }),
   });
 
-  return (
-    <section className="max-w-2xl space-y-6">
-      <h1 className="font-serif text-3xl">Mon compte</h1>
+  const initial = (profile.data?.name ?? profile.data?.email ?? '?').trim().charAt(0).toUpperCase();
 
-      <div className="rounded-xl border border-border bg-card p-5">
-        <dl className="grid gap-3 sm:grid-cols-2">
-          <div>
+  return (
+    <div className="max-w-3xl space-y-8">
+      <PageHeader eyebrow="Paramètres" title="Mon compte" />
+
+      <div className="surface flex items-center gap-4 p-5">
+        <span
+          aria-hidden
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary/10 font-serif text-2xl font-semibold text-primary-strong"
+        >
+          {initial}
+        </span>
+        <dl className="grid min-w-0 flex-1 gap-3 sm:grid-cols-2">
+          <div className="min-w-0">
             <dt className="text-xs text-muted-foreground">Nom</dt>
-            <dd>{profile.data?.name ?? '—'}</dd>
+            <dd className="truncate">{profile.data?.name ?? '—'}</dd>
           </div>
-          <div>
+          <div className="min-w-0">
             <dt className="text-xs text-muted-foreground">Email</dt>
-            <dd>{profile.data?.email ?? '—'}</dd>
+            <dd className="truncate">{profile.data?.email ?? '—'}</dd>
           </div>
         </dl>
       </div>
 
-      <div className="space-y-3 rounded-xl border border-border bg-card p-5">
-        <h2 className="font-serif text-xl">Mes données</h2>
+      <Section title="Mes données">
         <p className="text-sm text-muted-foreground">
           Téléchargez l’ensemble de vos caves, bouteilles, achats et estimations dans un fichier JSON réutilisable.
         </p>
         <Button variant="outline" onClick={() => exportData.mutate()} disabled={exportData.isPending}>
           <Download className="h-4 w-4" aria-hidden /> Télécharger mes données
         </Button>
-      </div>
+      </Section>
 
-      <div className="space-y-3 rounded-xl border border-destructive/40 bg-card p-5">
-        <h2 className="font-serif text-xl">Supprimer mon compte</h2>
+      <Section title="Supprimer mon compte" className="border-destructive/35">
         <p className="text-sm text-muted-foreground">
           Votre compte, vos caves, bouteilles, achats, estimations, photos et factures seront supprimés immédiatement et
           définitivement. Pensez à télécharger vos données avant.
         </p>
-        <TextField
-          label={`Tapez ${CONFIRMATION} pour confirmer`}
-          value={confirmation}
-          onChange={(e) => setConfirmation(e.target.value)}
-          autoComplete="off"
-        />
+        <div className="max-w-sm">
+          <TextField
+            label={`Tapez ${CONFIRMATION} pour confirmer`}
+            value={confirmation}
+            onChange={(e) => setConfirmation(e.target.value)}
+            autoComplete="off"
+          />
+        </div>
         <FormError message={remove.error?.message ?? null} />
         <Button
           variant="destructive"
@@ -85,11 +94,14 @@ export function AccountPage() {
         >
           <Trash2 className="h-4 w-4" aria-hidden /> Supprimer définitivement mon compte
         </Button>
-      </div>
+      </Section>
 
       <p className="text-sm text-muted-foreground">
-        En savoir plus : <Link to="/confidentialite" className="text-primary underline-offset-4 hover:underline">politique de confidentialité</Link>
+        En savoir plus :{' '}
+        <Link to="/confidentialite" className="text-primary underline-offset-4 hover:underline">
+          politique de confidentialité
+        </Link>
       </p>
-    </section>
+    </div>
   );
 }

@@ -8,6 +8,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 import { ConfigErrorScreen, ErrorBoundary } from './app/ErrorBoundary';
+import { withBase } from './lib/base';
 import { readConfig } from './lib/config';
 import './index.css';
 
@@ -21,6 +22,6 @@ createRoot(document.getElementById('root')!).render(
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => console.error('Service worker non enregistré', error));
+    navigator.serviceWorker.register(withBase('sw.js')).catch((error) => console.error('Service worker non enregistré', error));
   });
 }

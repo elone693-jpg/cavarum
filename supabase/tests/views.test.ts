@@ -49,3 +49,21 @@ describe('vue cellar_summaries', () => {
     expect(await db.asUser(bob, `select * from public.cellar_summaries`)).toHaveLength(0);
   });
 });
+
+describe('vue collection_summary', () => {
+  it('totalise caves, bouteilles possédées et coût d’achat de l’utilisateur', async () => {
+    const rows = await db.asUser<Record<string, unknown>>(
+      alice,
+      `select cellar_count, bottle_units, purchase_total::text from public.collection_summary`,
+    );
+    expect(rows).toEqual([{ cellar_count: 2, bottle_units: 6, purchase_total: '0.40' }]);
+  });
+
+  it('renvoie des zéros pour un utilisateur sans cave', async () => {
+    const rows = await db.asUser<Record<string, unknown>>(
+      bob,
+      `select cellar_count, bottle_units, purchase_total::text from public.collection_summary`,
+    );
+    expect(rows).toEqual([{ cellar_count: 0, bottle_units: 0, purchase_total: '0.00' }]);
+  });
+});

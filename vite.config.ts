@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { copyFileSync } from 'node:fs';
 import path from 'node:path';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
@@ -27,8 +28,28 @@ function cavarumSecurity(): Plugin {
   };
 }
 
+/**
+ * GitHub Pages ne sait pas renvoyer index.html pour une route inconnue :
+ * une copie en 404.html permet d'ouvrir directement /cavarum/cellars ou un lien reçu par email.
+ */
+function spaFallback(): Plugin {
+  let outDir = 'dist';
+  return {
+    name: 'cavarum-spa-fallback',
+    apply: 'build',
+    configResolved(config) {
+      outDir = path.resolve(config.root, config.build.outDir);
+    },
+    closeBundle() {
+      copyFileSync(path.join(outDir, 'index.html'), path.join(outDir, '404.html'));
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), cavarumSecurity()],
+  // Sous-dossier de publication : « /cavarum/ » sur GitHub Pages, racine sinon.
+  base: process.env.BASE_PATH ?? '/',
+  plugins: [react(), cavarumSecurity(), spaFallback()],
   resolve: {
     alias: { '@': path.resolve(__dirname, 'src') },
   },

@@ -12,7 +12,11 @@ export function getSupabase(): SupabaseClient {
   return client;
 }
 
+// Chrome, Firefox et Safari formulent différemment une coupure réseau.
+const NETWORK_ERROR = /Failed to fetch|NetworkError|Load failed/i;
+
 /** Transforme une erreur Supabase en Error, pour que les écrans n'aient qu'un seul cas à gérer. */
 export function raise(error: { message: string } | null): void {
-  if (error) throw new Error(error.message);
+  if (!error) return;
+  throw new Error(NETWORK_ERROR.test(error.message) ? 'Connexion au serveur impossible : vérifiez votre réseau.' : error.message);
 }

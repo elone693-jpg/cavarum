@@ -21,6 +21,17 @@ export async function listCellarSummaries(): Promise<CellarSummary[]> {
   return (data ?? []) as unknown as CellarSummary[];
 }
 
+export type CollectionSummary = { cellar_count: number; bottle_units: number; purchase_total: string };
+
+export async function getCollectionSummary(): Promise<CollectionSummary> {
+  const { data, error } = await getSupabase()
+    .from('collection_summary')
+    .select('cellar_count, bottle_units, purchase_total::text')
+    .single();
+  raise(error);
+  return data as unknown as CollectionSummary;
+}
+
 export async function createCellar(input: { name: string; type: CellarType; location: string | null }) {
   const supabase = getSupabase();
   const { data: auth } = await supabase.auth.getUser();

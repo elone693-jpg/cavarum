@@ -1,0 +1,48 @@
+{
+  "contract": "Cavarum v2 — gestion d'une collection de rhums, usage répété sur mobile (dans la cave) et sur ordinateur. Tâche principale : retrouver une cave puis une bouteille et lire son coût et sa valeur. Hiérarchie : synthèse de la collection > caves > bouteilles > fiche. Ton : raffiné et calme (chai la nuit), titres en Cormorant Garamond, données en Inter à chiffres tabulaires, accent or des étiquettes, vert canne et bleu ardoise pour les statuts. Détail mémorable : cartes « étiquette » avec liseré doré et icône bouteille sous voûte de chai. Contraintes : React + Tailwind, jetons CSS existants, WCAG AA, cibles tactiles ≥ 44 px, aucun débordement horizontal à 390 px.",
+  "targetViewports": ["390x844", "1440x900"],
+  "accessibility": {
+    "status": "pass",
+    "evidence": "Lighthouse (chrome-devtools ECC) Accessibilité 100 sur connexion (build de production), caves, cave et fiche bouteille (aperçu, mobile et bureau). Lien d'évitement « Aller au contenu », anneau de focus visible global, libellés associés à chaque champ, noms accessibles explicites (boutons icône, liens de bouteille « Distillerie — Cuvée »), cibles tactiles de 44 px minimum, champs en 16 px sur mobile (pas de zoom iOS), animations coupées avec prefers-reduced-motion."
+  },
+  "responsive": {
+    "status": "pass",
+    "evidence": "16 captures complètes (8 écrans × 2 tailles) via scripts/design-screenshots.ts, qui vérifie scrollWidth ≤ largeur : aucun débordement horizontal. Mobile : barre d'onglets en bas avec zone de sécurité, chiffres clés sur 2 colonnes avec montant en pleine largeur (correction d'une troncature « 9 325,… » constatée en revue), emplacement photo compact. Bureau : navigation en en-tête, grilles 3 colonnes, connexion en écran partagé."
+  },
+  "contentStates": {
+    "loading": {
+      "status": "pass",
+      "evidence": "Squelettes animés de même structure que le contenu (cartes de cave, lignes de bouteille, fiche) avec aria-busy ; captures cave-chargement-390x844.png et cave-chargement-1440x900.png."
+    },
+    "empty": {
+      "status": "pass",
+      "evidence": "État vide expliqué avec action : « Aucune cave pour l’instant » + bouton Nouvelle cave (caves-vide-*.png) ; cave sans bouteille et filtre sans résultat avec message adapté (test CellarPage « indique une cave vide »)."
+    },
+    "error": {
+      "status": "pass",
+      "evidence": "Encadré d'erreur role=alert avec message compréhensible (coupures réseau traduites, test src/lib/supabase.test.ts) et bouton Réessayer qui relance le chargement (test CellarsPage « permet de réessayer ») ; captures caves-erreur-*.png. Écran de secours global (ErrorBoundary) et écran de configuration incomplète."
+    },
+    "partial": {
+      "status": "pass",
+      "evidence": "Fiche bouteille sans photo : emplacement illustré « Aucune photo » ; champs absents masqués au lieu d'afficher des cases vides ; montant inconnu affiché « — » (bouteille-*.png, tests BottlePage)."
+    },
+    "success": {
+      "status": "pass",
+      "evidence": "Création de cave : notification « Cave créée » et formulaire refermé ; inscription : message « Vérifiez votre boîte mail » (test AuthPage) ; export : téléchargement et notification ; réinitialisation et suppression de compte : redirection vers l'écran suivant (tests PasswordPages et AccountPage)."
+    },
+    "permission": {
+      "status": "pass",
+      "evidence": "Visiteur non connecté redirigé vers la connexion (E2E Playwright mobile et bureau) ; cave ou bouteille d'un autre utilisateur invisible par RLS et affichée « introuvable … ne vous appartient pas » avec retour à Mes caves ; rubrique admin absente de la navigation."
+    }
+  },
+  "renderedEvidence": [
+    { "viewport": "390x844", "artifact": "caves-390x844.png", "observation": "Synthèse 3 caves / 66 bouteilles sur 2 colonnes, coût 9 325,20 € en pleine largeur, cartes étiquette lisibles, onglets en bas." },
+    { "viewport": "390x844", "artifact": "bouteille-390x844.png", "observation": "Emplacement photo compact, distillerie en surtitre doré, pastilles qui passent à la ligne, chiffres clés sans troncature." },
+    { "viewport": "390x844", "artifact": "connexion-390x844.png", "observation": "Icône, onglets Connexion/Inscription, champs 44 px, mention sanitaire et liens légaux visibles." },
+    { "viewport": "390x844", "artifact": "caves-erreur-390x844.png", "observation": "Message d'erreur compréhensible avec bouton Réessayer." },
+    { "viewport": "1440x900", "artifact": "connexion-1440x900.png", "observation": "Écran partagé : panneau de marque avec accroche, formulaire centré à droite." },
+    { "viewport": "1440x900", "artifact": "cave-1440x900.png", "observation": "Liste avec vignettes bouteille, distillerie en petites capitales, statuts colorés, quantité et chevron alignés." },
+    { "viewport": "1440x900", "artifact": "bouteille-1440x900.png", "observation": "Visuel à gauche, titre serif, pastilles, chiffres clés et sections en deux colonnes, historique en frise." },
+    { "viewport": "1440x900", "artifact": "caves-vide-1440x900.png", "observation": "État vide centré avec icône, explication et bouton d'action." }
+  ]
+}

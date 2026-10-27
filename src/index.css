@@ -2,26 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Identité Cavarum v1 : brun cave #1a0f0a, or #d4a04a. */
+/*
+ * Identité Cavarum : un chai la nuit.
+ * Espresso profond pour le fond, surfaces légèrement relevées, or des étiquettes pour l'accent,
+ * vert canne pour les états positifs, bleu ardoise pour le transit.
+ */
 @layer base {
   :root {
-    --background: 20 44% 7%;
-    --foreground: 36 33% 90%;
-    --card: 20 35% 10%;
-    --muted: 20 25% 15%;
-    --muted-foreground: 30 15% 62%;
-    --border: 25 22% 20%;
-    --primary: 38 61% 56%;
-    --primary-foreground: 20 44% 7%;
-    --destructive: 0 65% 52%;
+    --background: 24 32% 6%;
+    --foreground: 38 30% 92%;
+    --surface: 24 24% 9.5%;
+    --surface-raised: 24 20% 12.5%;
+    --muted: 24 18% 15%;
+    --muted-foreground: 32 13% 64%;
+    --border: 28 18% 18%;
+    --border-strong: 32 22% 26%;
+    --primary: 38 62% 58%;
+    --primary-strong: 36 70% 66%;
+    --primary-foreground: 24 40% 8%;
+    --cane: 145 24% 56%;
+    --slate: 210 22% 64%;
+    --copper: 22 62% 60%;
+    --destructive: 2 64% 56%;
     --destructive-foreground: 0 0% 100%;
-    --ring: 38 61% 56%;
+    --ring: 38 62% 58%;
+    --radius: 14px;
     color-scheme: dark;
   }
 
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
-    @apply bg-background font-sans text-foreground antialiased;
-    background-image: radial-gradient(ellipse at top, rgba(212, 160, 74, 0.08), transparent 60%);
+    @apply bg-background font-sans text-[15px] leading-relaxed text-foreground antialiased;
+    background-image:
+      radial-gradient(1200px 600px at 50% -10%, hsl(var(--primary) / 0.07), transparent 60%),
+      radial-gradient(800px 400px at 100% 0%, hsl(var(--copper) / 0.04), transparent 60%);
+    background-attachment: fixed;
     min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif font-semibold tracking-tight;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Surface « étiquette » : fond relevé, liseré lumineux en haut, coins arrondis. */
+  .surface {
+    @apply rounded-[var(--radius)] border border-border bg-surface;
+    box-shadow:
+      inset 0 1px 0 hsl(var(--foreground) / 0.04),
+      0 1px 2px hsl(0 0% 0% / 0.3),
+      0 12px 32px -18px hsl(0 0% 0% / 0.6);
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-primary;
+  }
+
+  .numeric {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .label-rule {
+    background-image: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.55), transparent);
   }
 }

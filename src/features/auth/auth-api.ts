@@ -1,3 +1,4 @@
+import { appUrl } from '@/lib/base';
 import { getSupabase } from '@/lib/supabase';
 import type { SignUpInput } from './auth-schemas';
 
@@ -23,7 +24,7 @@ export async function signUp({ name, email, password }: SignUpInput) {
     options: {
       // Recopiés dans public.profiles par le trigger handle_new_user.
       data: { name, adult_confirmed_at: new Date().toISOString() },
-      emailRedirectTo: `${window.location.origin}/`,
+      emailRedirectTo: appUrl(''),
     },
   });
   fail(error);
@@ -31,7 +32,7 @@ export async function signUp({ name, email, password }: SignUpInput) {
 
 export async function sendPasswordReset(email: string) {
   const { error } = await getSupabase().auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`,
+    redirectTo: appUrl('reset-password'),
   });
   fail(error);
 }

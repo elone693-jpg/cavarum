@@ -28,6 +28,7 @@ Les migrations sont dans `supabase/migrations/` :
 | `0003_storage.sql` | Buckets **privés** `bottle-photos` et `invoices`, cloisonnés par dossier utilisateur |
 | `0004_views.sql` | `cellar_summaries` : totaux par cave calculés en base |
 | `0005_account.sql` | `delete_my_account()` : suppression du compte et de toutes ses données (RGPD) |
+| `0006_collection_summary.sql` | `collection_summary` : synthèse de la collection (caves, bouteilles, coût) |
 
 Pour les appliquer à un projet Supabase hébergé (CLI Supabase requise) :
 
@@ -94,6 +95,27 @@ Le parcours complet (connexion → caves → bouteille migrée) nécessite un co
 ```bash
 E2E_EMAIL=… E2E_PASSWORD=… E2E_EXPECT_CASK=7 E2E_EXPECT_PHOTO=1 npm run test:e2e
 ```
+
+## Design et icône
+
+- **Système de design** : jetons dans `src/index.css` (espresso, or des étiquettes, vert canne, bleu ardoise), composants partagés dans `src/components/ui/` (`PageHeader`, `StatGrid`, `Skeleton`, `EmptyState`, `ErrorState`, `Section`). Titres en Cormorant Garamond, données en Inter à chiffres tabulaires.
+- **Aperçu sans base de données** : `npm run dev` puis ouvrir `/preview.html?route=/cellars` (routes : `/auth`, `/cellars`, `/cellars/c-1`, `/bottles/b-1`, `/account`; états : `&state=empty|loading|error`). Cette page n'est pas incluse dans le build.
+- **Captures de référence** : `npm run design:screenshots` régénère `docs/design/*.png` en 390×844 et 1440×900 ; le relevé de preuves `docs/design/evidence.json` est validé par le skill ECC `frontend-design-direction`.
+- **Icône** : source unique `public/icon.svg` (bouteille de rhum sous voûte de chai). `npm run icons` génère favicon, icônes PWA (192, 512, maskable), icône Apple (180) et, pour le bureau macOS, `assets/brand/Cavarum.icns` et `assets/brand/icon-1024.png`.
+
+**Installer Cavarum sur le bureau** (une fois l'app déployée) : dans Chrome ou Edge, menu ⋮ → « Installer Cavarum » ; sur Mac avec Safari, Fichier → « Ajouter au Dock » ; sur iPhone, Partager → « Sur l’écran d’accueil ». L'icône du manifest est utilisée automatiquement.
+
+## Publication (GitHub Pages, comme AgenceManager)
+
+L'app est publiée sur **https://elone693-jpg.github.io/cavarum/** par le workflow `.github/workflows/deploy.yml`, à chaque push sur `main`.
+
+1. Dans le projet Supabase v2 : appliquer les migrations (`npx supabase db push`). Dans Authentication → URL Configuration, mettre `https://elone693-jpg.github.io/cavarum/` en Site URL et ajouter `https://elone693-jpg.github.io/cavarum/reset-password` aux Redirect URLs.
+2. Dans le dépôt GitHub → Settings → Secrets and variables → Actions → **Variables** : `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`. La clé anon est publique par conception : la sécurité repose sur la RLS.
+3. Settings → Pages → Source : **GitHub Actions**.
+
+Le build sous `/cavarum/` (`BASE_PATH=/cavarum/`) produit un `404.html`, copie de l'app, pour que les liens directs et les liens reçus par email fonctionnent. GitHub Pages n'applique pas le fichier `_headers` : la CSP reste active via la balise `<meta>`, mais l'interdiction d'affichage dans un cadre (`frame-ancestors`, `X-Frame-Options`) nécessite un hébergeur qui accepte les en-têtes (Netlify, Cloudflare Pages).
+
+**Lanceur Mac** : `npm run launcher` crée `~/Desktop/Cavarum.app`, une petite application avec l'icône Cavarum qui ouvre l'app en ligne dans Safari (même principe que `AgenceManager.app`). `npm run launcher -- /Applications` l'installe dans le dossier Applications.
 
 ## Mise en production
 

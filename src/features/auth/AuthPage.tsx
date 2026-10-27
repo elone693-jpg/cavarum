@@ -14,7 +14,7 @@ export function AuthPage() {
 
   return (
     <AuthLayout title="Gérez votre collection de rhums premium">
-      <div role="tablist" className="mb-5 grid grid-cols-2 rounded-md bg-muted p-1">
+      <div role="tablist" aria-label="Accès au compte" className="mb-6 grid grid-cols-2 rounded-[12px] border border-border bg-background/60 p-1">
         {(
           [
             ['signin', 'Connexion'],
@@ -28,8 +28,10 @@ export function AuthPage() {
             aria-selected={tab === value}
             onClick={() => setTab(value)}
             className={cn(
-              'min-h-10 rounded text-sm font-medium',
-              tab === value ? 'bg-background text-foreground shadow' : 'text-muted-foreground',
+              'min-h-10 rounded-[9px] text-sm font-medium transition-colors',
+              tab === value
+                ? 'bg-surface-raised text-foreground shadow-[inset_0_1px_0_hsl(0_0%_100%/0.05),0_1px_3px_hsl(0_0%_0%/0.4)]'
+                : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {label}

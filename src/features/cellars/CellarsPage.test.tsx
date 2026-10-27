@@ -7,6 +7,7 @@ import * as cellarsApi from './cellars-api';
 
 vi.mock('./cellars-api', () => ({
   listCellarSummaries: vi.fn(),
+  getCollectionSummary: vi.fn(),
   createCellar: vi.fn(),
   deleteCellar: vi.fn(),
 }));
@@ -17,6 +18,9 @@ const summaries = [
 ] as const;
 
 beforeEach(() => {
+  vi.mocked(cellarsApi.getCollectionSummary)
+    .mockReset()
+    .mockResolvedValue({ cellar_count: 2, bottle_units: 7, purchase_total: '1234.40' });
   vi.mocked(cellarsApi.listCellarSummaries).mockReset().mockResolvedValue([...summaries]);
   vi.mocked(cellarsApi.createCellar).mockReset().mockResolvedValue(undefined);
   vi.mocked(cellarsApi.deleteCellar).mockReset().mockResolvedValue(undefined);
@@ -30,6 +34,23 @@ describe('CellarsPage', () => {
     expect(within(card).getByText('6 bouteilles')).toBeInTheDocument();
     expect(within(card).getByText('1 234,40 €')).toBeInTheDocument();
     expect(screen.getByText('1 bouteille')).toBeInTheDocument();
+  });
+
+  it('affiche la synthèse de la collection', async () => {
+    renderRoute(<CellarsPage />);
+    expect(await screen.findByText('Coût d’achat', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByText('7')).toBeInTheDocument();
+  });
+
+  it('affiche l’erreur de chargement et permet de réessayer', async () => {
+    vi.mocked(cellarsApi.listCellarSummaries)
+      .mockRejectedValueOnce(new Error('Connexion au serveur impossible : vérifiez votre réseau.'))
+      .mockResolvedValueOnce([...summaries]);
+    const user = userEvent.setup();
+    renderRoute(<CellarsPage />);
+    expect(await screen.findByRole('alert')).toHaveTextContent('Connexion au serveur impossible');
+    await user.click(screen.getByRole('button', { name: 'Réessayer' }));
+    expect(await screen.findByText('Cave principale')).toBeInTheDocument();
   });
 
   it('invite à créer une première cave quand il n’y en a aucune', async () => {

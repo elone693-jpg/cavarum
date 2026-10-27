@@ -1,9 +1,11 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronRight, MapPin, Wine } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { BottleGlyph } from '@/components/BottleGlyph';
 import { Button } from '@/components/ui/button';
-import { FormError, SelectField } from '@/components/ui/field';
+import { SelectField } from '@/components/ui/field';
+import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/layout';
 import { getCellar, listCellarBottles } from './bottles-api';
 import { BOTTLE_STATUSES, statusLabel, type BottleStatus } from './status';
 import { StatusBadge } from './StatusBadge';
@@ -21,27 +23,37 @@ export function CellarPage() {
   });
   const items = bottles.data?.pages.flatMap((p) => p.items) ?? [];
 
-  return (
-    <section className="space-y-6">
-      <Link to="/cellars" className="inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" aria-hidden /> Mes caves
-      </Link>
+  if (cellar.data === null) {
+    return (
+      <EmptyState icon={Wine} title="Cave introuvable" action={<BackLink />}>
+        Cette cave n’existe pas ou ne vous appartient pas.
+      </EmptyState>
+    );
+  }
 
-      {cellar.data === null ? (
-        <p>Cave introuvable</p>
-      ) : (
-        <header className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="font-serif text-3xl">{cellar.data?.name ?? '…'}</h1>
-            {cellar.data?.location && <p className="text-sm text-muted-foreground">{cellar.data.location}</p>}
-          </div>
-          <div className="w-full sm:w-56">
+  return (
+    <div className="space-y-6">
+      <BackLink />
+
+      <PageHeader
+        eyebrow="Cave"
+        title={cellar.data?.name ?? <Skeleton className="h-10 w-64" />}
+        description={
+          cellar.data?.location && (
+            <span className="flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5" aria-hidden />
+              {cellar.data.location}
+            </span>
+          )
+        }
+        actions={
+          <div className="w-44 sm:w-52">
             <SelectField
               label="Statut"
               value={status ?? ''}
               onChange={(e) => setStatus((e.target.value || null) as BottleStatus | null)}
             >
-              <option value="">Tous</option>
+              <option value="">Tous les statuts</option>
               {BOTTLE_STATUSES.map((s) => (
                 <option key={s} value={s}>
                   {statusLabel(s)}
@@ -49,43 +61,85 @@ export function CellarPage() {
               ))}
             </SelectField>
           </div>
-        </header>
+        }
+      />
+
+      {bottles.isError && (
+        <ErrorState title="Impossible de charger les bouteilles" error={bottles.error} onRetry={() => bottles.refetch()} />
       )}
 
-      {bottles.isError && <FormError message={`Impossible de charger les bouteilles : ${bottles.error.message}`} />}
+      {bottles.isPending && (
+        <div className="surface divide-y divide-border" aria-busy="true" aria-label="Chargement des bouteilles">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-4 px-4 py-4">
+              <Skeleton className="h-14 w-9" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-5 w-2/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {bottles.isSuccess && items.length === 0 && (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center">Aucune bouteille dans cette cave</p>
+        <EmptyState icon={Wine} title={status ? `Aucune bouteille « ${statusLabel(status)} »` : 'Aucune bouteille dans cette cave'}>
+          {status ? 'Essayez un autre statut.' : 'Les bouteilles ajoutées à cette cave apparaîtront ici.'}
+        </EmptyState>
       )}
 
-      <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
-        {items.map((bottle) => (
-          <li key={bottle.id}>
-            <Link
-              to={`/bottles/${bottle.id}`}
-              className="flex min-h-14 flex-wrap items-center justify-between gap-2 px-4 py-3 hover:bg-muted"
-            >
-              <span>
-                <span className="font-medium">{`${bottle.rum.distillery} — ${bottle.rum.cuvee_name}`}</span>
-                <span className="block text-xs text-muted-foreground">
-                  {[bottle.rum.vintage, bottle.rum.abv && `${bottle.rum.abv} %`, bottle.cask_number && `Fût n°${bottle.cask_number}`]
-                    .filter(Boolean)
-                    .join(' · ')}
+      {items.length > 0 && (
+        <ul className="surface divide-y divide-border overflow-hidden">
+          {items.map((bottle) => (
+            <li key={bottle.id}>
+              <Link
+                to={`/bottles/${bottle.id}`}
+                className="group flex min-h-[76px] items-center gap-4 px-4 py-3 transition-colors hover:bg-surface-raised sm:px-5"
+              >
+                <span className="flex h-14 w-10 shrink-0 items-center justify-center rounded-lg bg-background/60">
+                  <BottleGlyph className="h-11" tone={['sold', 'empty', 'lost', 'gifted', 'exchanged'].includes(bottle.status) ? 'muted' : 'primary'} />
                 </span>
-              </span>
-              <span className="flex items-center gap-3 text-sm">
-                {bottle.quantity > 1 && <span className="text-muted-foreground">×{bottle.quantity}</span>}
-                <StatusBadge status={bottle.status} />
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    {bottle.rum.distillery}
+                  </span>
+                  <span className="sr-only"> — </span>
+                  <span className="block truncate font-serif text-lg font-semibold leading-snug">{bottle.rum.cuvee_name}</span>
+                  <span className="numeric mt-0.5 block truncate text-xs text-muted-foreground">
+                    {[bottle.rum.vintage, bottle.rum.abv && `${bottle.rum.abv} %`, bottle.cask_number && `Fût n°${bottle.cask_number}`]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </span>
+                </span>
+                <span className="flex shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                  <StatusBadge status={bottle.status} />
+                  {bottle.quantity > 1 && <span className="numeric text-sm text-muted-foreground">×{bottle.quantity}</span>}
+                </span>
+                <ChevronRight className="hidden h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 sm:block" aria-hidden />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {bottles.hasNextPage && (
-        <Button variant="outline" onClick={() => bottles.fetchNextPage()} disabled={bottles.isFetchingNextPage}>
-          Voir plus
-        </Button>
+        <div className="flex justify-center">
+          <Button variant="outline" onClick={() => bottles.fetchNextPage()} disabled={bottles.isFetchingNextPage}>
+            {bottles.isFetchingNextPage ? 'Chargement…' : 'Voir plus'}
+          </Button>
+        </div>
       )}
-    </section>
+    </div>
+  );
+}
+
+function BackLink() {
+  return (
+    <Link
+      to="/cellars"
+      className="inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <ArrowLeft className="h-4 w-4" aria-hidden /> Mes caves
+    </Link>
   );
 }

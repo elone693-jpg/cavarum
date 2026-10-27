@@ -12,7 +12,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "migrate:v1": "tsx scripts/migrate-v1/index.ts"
+    "migrate:v1": "tsx scripts/migrate-v1/index.ts",
+    "icons": "tsx scripts/generate-icons.ts",
+    "design:screenshots": "tsx scripts/design-screenshots.ts",
+    "launcher": "zsh scripts/make-mac-launcher.sh"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "5.3.0",

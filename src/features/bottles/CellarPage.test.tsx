@@ -29,7 +29,7 @@ describe('CellarPage', () => {
   it('liste les bouteilles de la cave avec leur statut', async () => {
     renderRoute(<CellarPage />, { path: '/cellars/:cellarId', url: '/cellars/c-1' });
     expect(await screen.findByRole('heading', { name: 'Cave principale' })).toBeInTheDocument();
-    expect(await screen.findByText('Neisson — Cuvée')).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /Neisson — Cuvée/ })).toBeInTheDocument();
     expect(within(screen.getByRole('list')).getByText('Ouverte')).toBeInTheDocument();
     expect(bottlesApi.listCellarBottles).toHaveBeenCalledWith('c-1', { status: null, page: 0 });
   });
@@ -37,7 +37,7 @@ describe('CellarPage', () => {
   it('filtre par statut', async () => {
     const user = userEvent.setup();
     renderRoute(<CellarPage />, { path: '/cellars/:cellarId', url: '/cellars/c-1' });
-    await screen.findByText('Neisson — Cuvée');
+    await screen.findByRole('link', { name: /Neisson — Cuvée/ });
     await user.selectOptions(screen.getByLabelText('Statut'), 'open');
     expect(bottlesApi.listCellarBottles).toHaveBeenLastCalledWith('c-1', { status: 'open', page: 0 });
   });
@@ -49,8 +49,8 @@ describe('CellarPage', () => {
     const user = userEvent.setup();
     renderRoute(<CellarPage />, { path: '/cellars/:cellarId', url: '/cellars/c-1' });
     await user.click(await screen.findByRole('button', { name: 'Voir plus' }));
-    expect(await screen.findByText('Damoiseau — Cuvée')).toBeInTheDocument();
-    expect(screen.getByText('Neisson — Cuvée')).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /Damoiseau — Cuvée/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Neisson — Cuvée/ })).toBeInTheDocument();
     expect(bottlesApi.listCellarBottles).toHaveBeenLastCalledWith('c-1', { status: null, page: 1 });
   });
 

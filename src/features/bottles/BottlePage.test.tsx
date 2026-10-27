@@ -48,9 +48,9 @@ describe('BottlePage', () => {
     expect(await screen.findByRole('heading', { name: 'Neisson — Réserve Spéciale' })).toBeInTheDocument();
     expect(bottlesApi.getBottle).toHaveBeenCalledWith('b-1');
     expect(screen.getByText('En cave')).toBeInTheDocument();
-    expect(screen.getByText('Fût n°7')).toBeInTheDocument();
-    expect(screen.getByText('Batch B2')).toBeInTheDocument();
-    expect(screen.getByText('89,90 €')).toBeInTheDocument();
+    expect(screen.getAllByText('Fût n°7')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Batch B2')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('89,90 €')[0]).toBeInTheDocument();
     expect(screen.getByText('Excellence Rhum')).toBeInTheDocument();
     expect(screen.getByText('Superbe nez')).toBeInTheDocument();
   });
@@ -64,7 +64,7 @@ describe('BottlePage', () => {
 
   it('affiche l’historique des estimations reprises de la v1', async () => {
     renderRoute(<BottlePage />, { path: '/bottles/:bottleId', url: '/bottles/b-1' });
-    expect(await screen.findByText('120,00 €')).toBeInTheDocument();
+    expect((await screen.findAllByText('120,00 €'))[0]).toBeInTheDocument();
     expect(screen.getByText('Cavarum v1 (valeur actuelle)')).toBeInTheDocument();
   });
 

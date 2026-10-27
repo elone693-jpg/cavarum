@@ -12,6 +12,17 @@
       }
     },
     {
+      "name": "cavarum-pages",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "npx vite build && npx vite preview --port 4174 --strictPort"],
+      "port": 4174,
+      "env": {
+        "BASE_PATH": "/cavarum/",
+        "VITE_SUPABASE_URL": "http://127.0.0.1:54321",
+        "VITE_SUPABASE_ANON_KEY": "cle-factice-pour-apercu"
+      }
+    },
+    {
       "name": "cavarum-preview",
       "runtimeExecutable": "sh",
       "runtimeArgs": ["-c", "npx vite build && npx vite preview --port 4173 --strictPort"],
